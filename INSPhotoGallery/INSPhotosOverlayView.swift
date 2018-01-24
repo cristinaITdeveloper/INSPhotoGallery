@@ -22,6 +22,8 @@ import UIKit
 public protocol INSPhotosOverlayViewable:class {
     weak var photosViewController: INSPhotosViewController? { get set }
     
+    var navigationBarVisible : Bool! { get set }
+    
     func populateWithPhoto(_ photo: INSPhotoViewable)
     func setHidden(_ hidden: Bool, animated: Bool)
     func view() -> UIView
@@ -40,10 +42,13 @@ open class INSPhotosOverlayView: UIView , INSPhotosOverlayViewable {
     
     open private(set) var navigationItem: UINavigationItem!
     open weak var photosViewController: INSPhotosViewController?
+    open var navigationBarVisible: Bool!
     private var currentPhoto: INSPhotoViewable?
     
     private var topShadow: CAGradientLayer!
     private var bottomShadow: CAGradientLayer!
+    
+    
     
     var leftBarButtonItem: UIBarButtonItem? {
         didSet {
@@ -59,13 +64,17 @@ open class INSPhotosOverlayView: UIView , INSPhotosOverlayViewable {
     #if swift(>=4.0)
     var titleTextAttributes: [NSAttributedStringKey : AnyObject] = [:] {
         didSet {
-            navigationBar.titleTextAttributes = titleTextAttributes
+            if navigationBarVisible == true {
+                 navigationBar.titleTextAttributes = titleTextAttributes
+            }
         }
     }
     #else
     var titleTextAttributes: [String : AnyObject] = [:] {
         didSet {
-            navigationBar.titleTextAttributes = titleTextAttributes
+            if navigationBarVisible == true {
+                navigationBar.titleTextAttributes = titleTextAttributes
+            }
         }
     }
     #endif
@@ -73,7 +82,9 @@ open class INSPhotosOverlayView: UIView , INSPhotosOverlayViewable {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupShadows()
-        setupNavigationBar()
+        if navigationBarVisible == true {
+            setupNavigationBar()
+        }
         setupCaptionLabel()
         setupDeleteButton()
     }
@@ -93,9 +104,11 @@ open class INSPhotosOverlayView: UIView , INSPhotosOverlayViewable {
     open override func layoutSubviews() {
         // The navigation bar has a different intrinsic content size upon rotation, so we must update to that new size.
         // Do it without animation to more closely match the behavior in `UINavigationController`
-        UIView.performWithoutAnimation { () -> Void in
-            self.navigationBar.invalidateIntrinsicContentSize()
-            self.navigationBar.layoutIfNeeded()
+        if navigationBarVisible == true {
+            UIView.performWithoutAnimation { () -> Void in
+                self.navigationBar.invalidateIntrinsicContentSize()
+                self.navigationBar.layoutIfNeeded()
+            }
         }
         super.layoutSubviews()
         self.updateShadowFrames()
@@ -126,7 +139,9 @@ open class INSPhotosOverlayView: UIView , INSPhotosOverlayViewable {
 
         if let photosViewController = photosViewController {
             if let index = photosViewController.dataSource.indexOfPhoto(photo) {
-                navigationItem.title = String(format:NSLocalizedString("%d of %d",comment:""), index+1, photosViewController.dataSource.numberOfPhotos)
+                if navigationBarVisible == true {
+                    navigationItem.title = String(format:NSLocalizedString("%d of %d",comment:""), index+1, photosViewController.dataSource.numberOfPhotos)
+                }
             }
             captionLabel.attributedText = photo.attributedTitle
         }

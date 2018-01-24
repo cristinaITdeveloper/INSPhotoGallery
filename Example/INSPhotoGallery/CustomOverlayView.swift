@@ -12,7 +12,7 @@ import INSPhotoGalleryFramework
 
 class CustomOverlayView: INSNibLoadedView {
     weak var photosViewController: INSPhotosViewController?
-    
+    var navigationBarVisible: Bool!
     // Pass the touches down to other views
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         if let hitView = super.hitTest(point, with: event) , hitView != self {
@@ -28,6 +28,8 @@ class CustomOverlayView: INSNibLoadedView {
 
 
 extension CustomOverlayView: INSPhotosOverlayViewable {
+
+    
     func populateWithPhoto(_ photo: INSPhotoViewable) {
         
     }

@@ -59,6 +59,11 @@ open class INSPhotosViewController: UIViewController, UIPageViewControllerDataSo
     open var deletePhotoHandler: INSPhotosViewControllerDeletePhotoHandler?
     
     /*
+     * Define if overlay view must show navigation
+     */
+    open var defaultOverLayViewCanHaveNavigationBar: Bool = false
+    
+    /*
      * The overlay view displayed over photos, can be changed but must implement INSPhotosOverlayViewable
      */
     open var overlayView: INSPhotosOverlayViewable = INSPhotosOverlayView(frame: CGRect.zero) {
@@ -67,6 +72,7 @@ open class INSPhotosViewController: UIViewController, UIPageViewControllerDataSo
         }
         didSet {
             overlayView.photosViewController = self
+            overlayView.navigationBarVisible = defaultOverLayViewCanHaveNavigationBar
             overlayView.view().autoresizingMask = [.flexibleWidth, .flexibleHeight]
             overlayView.view().frame = view.bounds
             view.addSubview(overlayView.view())
